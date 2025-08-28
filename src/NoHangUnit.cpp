@@ -2,6 +2,7 @@
 #include "NoHangUnit.h"
 #include <QProcess>
 #include <QStringList>
+#include <QRegularExpression>
 
 static const char* kUnit = "nohang-desktop.service";
 

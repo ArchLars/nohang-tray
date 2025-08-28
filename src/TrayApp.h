@@ -22,6 +22,7 @@ class TrayApp : public QObject {
     Q_OBJECT
 public:
     explicit TrayApp(QObject* parent = nullptr);
+    ~TrayApp();  // out-of-line definition in the .cpp
     void start();
 
 private slots:
