@@ -1,0 +1,10 @@
+# ===== data/org.archlars.nohangtray.desktop =====
+[Desktop Entry]
+Type=Application
+Name=nohang-tray
+Comment=KDE tray indicator for nohang daemon, shows thresholds and live values
+Exec=nohang-tray
+Icon=security-medium
+Terminal=false
+Categories=System;Utility;
+X-KDE-StartupNotify=false
