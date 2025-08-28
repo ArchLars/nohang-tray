@@ -1,0 +1,22 @@
+# ===== packaging/PKGBUILD =====
+# Maintainer: ArchLars <bumbleberrycar@gmail.com>
+pkgname=nohang-tray
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="KDE Plasma tray icon for nohang, shows thresholds and live system values"
+arch=('x86_64')
+url="https://github.com/ArchLars/nohang-tray"
+license=('MIT')
+depends=('qt6-base' 'kstatusnotifieritem')
+makedepends=('cmake' 'gcc')
+source=("nohang-tray-$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+  cmake -S "$srcdir/nohang-tray-$pkgver" -B build -DCMAKE_BUILD_TYPE=Release
+  cmake --build build -j
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}
