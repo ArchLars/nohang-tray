@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    env:
+      CCACHE_COMPRESS: "true"
+      CCACHE_MAXSIZE: "300M"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache APT packages
+        uses: awalsh128/cache-apt-pkgs-action@v1.5.3
+        with:
+          packages: >-
+            build-essential
+            cmake
+            ninja-build
+            pkg-config
+            qt6-base-dev
+            libkf6statusnotifieritem-dev
+          version: 1
+
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2.18
+        with:
+          key: ${{ runner.os }}-nohang-tray-${{ hashFiles('**/CMakeLists.txt', '**/*.cmake', 'src/**') }}
+
+      - name: Configure
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Build
+        run: cmake --build build -j
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nohang-tray-ubuntu
+          path: build/nohang-tray
