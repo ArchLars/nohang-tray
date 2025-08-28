@@ -1,2 +1,25 @@
-# nohang-tray
-a minimal C++ Qt 6, KF6 SNI app that shows a shield icon only when nohang is active, and on hover shows a structured tooltip: current on/off status, selected thresholds from the config, and the corresponding real values computed from RAM, swap, and zram. PSI snapshots are included.
+# Layout
+
+```swift
+nohang-tray/
+  CMakeLists.txt
+  src/
+    main.cpp
+    TrayApp.h
+    TrayApp.cpp
+    NoHangStatus.h
+    NoHangStatus.cpp        (checks systemd service state)
+    ConfigModel.h
+    ConfigModel.cpp         (parses /etc/nohang/nohang-desktop.conf subset)
+    SystemInfo.h
+    SystemInfo.cpp          (reads /proc/meminfo, /proc/pressure/memory,
+                             /sys/block/zram0/{disksize,mm_stat}, /proc/swaps)
+    TooltipBuilder.h
+    TooltipBuilder.cpp      (formats values into KStatusNotifierItem tooltip)
+  data/
+    org.archlars.nohangtray.desktop  (optional autostart entry)
+  packaging/
+    PKGBUILD                 (Arch package skeleton)
+  README.md
+  LICENSE
+```
