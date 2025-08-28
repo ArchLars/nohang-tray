@@ -13,6 +13,8 @@
 static constexpr int kPollMs = 5000;
 static constexpr int kCfgWatchMs = 3000;
 
+TrayApp::~TrayApp() = default;
+
 TrayApp::TrayApp(QObject* parent) : QObject(parent) {}
 
 void TrayApp::start() {
