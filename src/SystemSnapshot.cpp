@@ -19,15 +19,21 @@ void SystemSnapshot::refresh() {
 
 void SystemSnapshot::readMeminfo() {
     QFile f(m_procRoot + QStringLiteral("/meminfo"));
-    if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) return;
+    if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning().noquote() << "SystemSnapshot: cannot open" << f.fileName();
+        m_mem = {};
+        return;
+    }
     QTextStream ts(&f);
     double memTotalKiB = 0, memAvailableKiB = 0, swapTotalKiB = 0, swapFreeKiB = 0;
-    while (!ts.atEnd()) {
-        const QString line = ts.readLine();
-        if (line.startsWith("MemTotal:"))       memTotalKiB       = line.split(QRegularExpression("\\s+"))[1].toDouble();
-        else if (line.startsWith("MemAvailable:")) memAvailableKiB = line.split(QRegularExpression("\\s+"))[1].toDouble();
-        else if (line.startsWith("SwapTotal:"))  swapTotalKiB      = line.split(QRegularExpression("\\s+"))[1].toDouble();
-        else if (line.startsWith("SwapFree:"))   swapFreeKiB       = line.split(QRegularExpression("\\s+"))[1].toDouble();
+    QString line;
+    while (ts.readLineInto(&line)) {
+        const QStringList parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+        if (parts.size() < 2) continue;
+        if (line.startsWith("MemTotal:"))       memTotalKiB       = parts[1].toDouble();
+        else if (line.startsWith("MemAvailable:")) memAvailableKiB = parts[1].toDouble();
+        else if (line.startsWith("SwapTotal:"))  swapTotalKiB      = parts[1].toDouble();
+        else if (line.startsWith("SwapFree:"))   swapFreeKiB       = parts[1].toDouble();
     }
     m_mem.memTotalMiB = memTotalKiB / 1024.0;
     m_mem.memAvailableMiB = memAvailableKiB / 1024.0;

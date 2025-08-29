@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Qt 6
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Test)
 
 # KDE Frameworks 6, Status Notifier Item
 # Docs show: find_package(KF6StatusNotifierItem) then link KF6::StatusNotifierItem
@@ -72,7 +72,7 @@ if (BUILD_TESTING)
   add_test(NAME Thresholds_test COMMAND Thresholds_test)
 
   add_executable(SystemSnapshot_test tests/SystemSnapshot_test.cpp)
-  target_link_libraries(SystemSnapshot_test PRIVATE nohang_core Qt6::Core GTest::gtest GTest::gtest_main)
+  target_link_libraries(SystemSnapshot_test PRIVATE nohang_core Qt6::Core Qt6::Test GTest::gtest GTest::gtest_main)
   target_precompile_headers(SystemSnapshot_test PRIVATE src/pch.h)
   add_test(NAME SystemSnapshot_test COMMAND SystemSnapshot_test)
 
