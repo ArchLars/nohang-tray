@@ -26,6 +26,10 @@ public:
     ~TrayApp();  // out-of-line definition in the .cpp
     void start();
 
+    // Utility method exposed for testing: doubles percent signs so that
+    // KStatusNotifierItem does not treat them as positional arguments.
+    static QString escapePercent(const QString& s);
+
 private slots:
     void tick();              // periodic refresh
     void refreshIcon();       // sets icon based on active state
