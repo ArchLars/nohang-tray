@@ -27,13 +27,16 @@ void SystemSnapshot::readMeminfo() {
     QTextStream ts(&f);
     double memTotalKiB = 0, memAvailableKiB = 0, swapTotalKiB = 0, swapFreeKiB = 0;
     QString line;
+    QRegularExpression re(R"(^\s*([A-Za-z_]+):\s+([0-9]+))");
     while (ts.readLineInto(&line)) {
-        const QStringList parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
-        if (parts.size() < 2) continue;
-        if (line.startsWith("MemTotal:"))       memTotalKiB       = parts[1].toDouble();
-        else if (line.startsWith("MemAvailable:")) memAvailableKiB = parts[1].toDouble();
-        else if (line.startsWith("SwapTotal:"))  swapTotalKiB      = parts[1].toDouble();
-        else if (line.startsWith("SwapFree:"))   swapFreeKiB       = parts[1].toDouble();
+        auto m = re.match(line);
+        if (!m.hasMatch()) continue;
+        const QString key = m.captured(1);
+        const double val  = m.captured(2).toDouble();
+        if (key == QLatin1String("MemTotal"))       memTotalKiB       = val;
+        else if (key == QLatin1String("MemAvailable")) memAvailableKiB = val;
+        else if (key == QLatin1String("SwapTotal"))  swapTotalKiB      = val;
+        else if (key == QLatin1String("SwapFree"))   swapFreeKiB       = val;
     }
     m_mem.memTotalMiB = memTotalKiB / 1024.0;
     m_mem.memAvailableMiB = memAvailableKiB / 1024.0;
