@@ -26,8 +26,9 @@ public:
     ~TrayApp();  // out-of-line definition in the .cpp
     void start();
 
-    // Utility method exposed for testing: doubles percent signs so that
-    // KStatusNotifierItem does not treat them as positional arguments.
+    // Utility method exposed for testing; currently returns the input string
+    // unchanged. Retained for compatibility if tooltips require escaping in
+    // the future.
     static QString escapePercent(const QString& s);
 
 private slots:
