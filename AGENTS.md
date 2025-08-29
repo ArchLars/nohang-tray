@@ -1,5 +1,18 @@
 You will follow TDD discipline – meaning when tasked with writing a feature, first write a test for the specific behavior that covers the full logic of the feature, then implement just enough code to make the test pass. Continue iterating until the test verifies the implementation. Prioritize the least amount of building for any step like compiling only for specific targets if necessary, do that until you are done and run the full final build. Ninja and development efficiency should be used regardless. Build with debug info and flags on during construction of the code and testing of it.
 
+AND: force regular log output during builds by adding flags such as:
+
+cmake --build build -j -- -v      # Ninja: show each command line
+ctest --test-dir build --progress # Tests: show per‑test progress
+
+AND ALSO: Use a keep-alive loop for very quiet steps
+Wrap long-running commands that produce little output:
+
+while sleep 60; do echo "still building…"; done &
+cmake --build build -j -- -v
+Increase the step timeout if needed
+In GitHub Actions, set timeout-minutes on the job or individual step when a build legitimately takes longer.****
+
 Refer to `CODING_GUIDE.md` for an overview of the project structure, build, and test commands.
 
 To compile a specific target, run `cmake --build build --target <target_name>` (e.g., `cmake --build build --target Thresholds_test`).
