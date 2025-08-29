@@ -4,3 +4,5 @@ Refer to `CODING_GUIDE.md` for an overview of the project structure, build, and 
 
 Update `README` and other relevant documentation after any changes.
 
+Install `ccache` and configure its maximum size (e.g., run `ccache -M 5G`) to speed up rebuilds.
+
