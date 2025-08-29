@@ -133,6 +133,7 @@ void TrayApp::refreshIcon() {
   const bool active = m_unit->isActive();
   const QString icon = active ? iconNameFor(*m_cfg, *m_snapshot)
                               : QStringLiteral("security-low");
+  m_lastIcon = icon;
   m_sni->setIconByName(icon);
   m_sni->setStatus(active ? KStatusNotifierItem::Active
                           : KStatusNotifierItem::Passive);
@@ -143,7 +144,11 @@ void TrayApp::refreshIcon() {
 void TrayApp::refreshTooltip() {
   // Build "configured vs current" text for RAM, swap, zram, PSI
   const QString tipTitle = QStringLiteral("nohang status");
-  const QString tipIcon = QStringLiteral("security-medium");
+  QString tipIcon = m_lastIcon;
+  if (tipIcon.isEmpty())
+    tipIcon = m_unit->isActive() ? iconNameFor(*m_cfg, *m_snapshot)
+                                 : QStringLiteral("security-low");
+  m_lastIcon = tipIcon;
   const QString tipText = m_tooltip->build(
       *m_cfg, *m_snapshot, m_unit->isActive(), m_unit->resolvedConfigPath());
 

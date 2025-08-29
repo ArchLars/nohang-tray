@@ -59,4 +59,6 @@ private:
 
   QString m_configPathCache;
   qint64 m_configMtimeCache{0};
+
+  QString m_lastIcon;
 };

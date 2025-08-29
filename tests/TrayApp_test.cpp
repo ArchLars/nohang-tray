@@ -1,10 +1,15 @@
 #include "pch.h"
 #include <gtest/gtest.h>
+#include <QApplication>
+#include <QFile>
+#include <QFileDevice>
+#include <QTemporaryDir>
+#include <KStatusNotifierItem>
 #define private public
 #include "NoHangConfig.h"
 #include "SystemSnapshot.h"
-#undef private
 #include "TrayApp.h"
+#undef private
 
 TEST(TrayAppTest, EscapePercent) {
   const QString input = "value 42 %";
@@ -117,4 +122,47 @@ TEST(TrayAppTest, IconUsesPsiMetric) {
 
   snap.m_psi.some_avg10 = 5.0; // below warn
   EXPECT_EQ(QStringLiteral("security-low"), TrayApp::iconNameFor(cfg, snap));
+}
+
+TEST(TrayAppTest, TooltipIconChangesWithSnapshots) {
+  qputenv("QT_QPA_PLATFORM", QByteArray("offscreen"));
+
+  QTemporaryDir dir;
+  QFile script(dir.filePath(QStringLiteral("systemctl")));
+  ASSERT_TRUE(script.open(QIODevice::WriteOnly | QIODevice::Text));
+  script.write("#!/bin/sh\n");
+  script.write("if [ \"$1\" = \"is-active\" ]; then exit 0; fi\n");
+  script.write("if [ \"$1\" = \"show\" ]; then echo 'ExecStart={ path=/usr/bin/nohang ; argv[]=/usr/bin/nohang --monitor --config /etc/nohang/nohang-desktop.conf ; }'; exit 0; fi\n");
+  script.write("exit 1\n");
+  script.close();
+  QFile::setPermissions(script.fileName(), QFileDevice::ExeUser | QFileDevice::ReadUser | QFileDevice::WriteUser);
+
+  const QByteArray oldPath = qgetenv("PATH");
+  qputenv("PATH", dir.path().toUtf8() + ':' + oldPath);
+
+  int argc = 1;
+  char arg0[] = "test";
+  char *argv[] = {arg0, nullptr};
+  QApplication app(argc, argv);
+
+  TrayApp t;
+  t.ensureModels();
+  t.setupStatusItem();
+
+  t.m_cfg->m_t.warn_mem_percent = 40.0;
+  t.m_cfg->m_t.soft_mem_percent = 30.0;
+  t.m_cfg->m_t.hard_mem_percent = 20.0;
+  t.m_snapshot->m_mem.memTotalMiB = 100.0;
+
+  t.m_snapshot->m_mem.memAvailableMiB = 50.0;
+  t.refreshIcon();
+  t.refreshTooltip();
+  EXPECT_EQ(QStringLiteral("security-low"), t.m_sni->toolTipIconName());
+
+  t.m_snapshot->m_mem.memAvailableMiB = 15.0;
+  t.refreshIcon();
+  t.refreshTooltip();
+  EXPECT_EQ(QStringLiteral("security-high"), t.m_sni->toolTipIconName());
+
+  qputenv("PATH", oldPath);
 }
