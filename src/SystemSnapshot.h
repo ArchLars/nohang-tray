@@ -32,6 +32,7 @@ class SystemSnapshot : public QObject {
     Q_OBJECT
 public:
     explicit SystemSnapshot(QObject* parent = nullptr);
+    SystemSnapshot(const QString& procRoot, const QString& sysRoot, QObject* parent = nullptr);
 
     void refresh();
 
@@ -45,6 +46,8 @@ private:
     void readZram();
     void readPsi();
 
+    QString m_procRoot{QStringLiteral("/proc")};
+    QString m_sysRoot{QStringLiteral("/sys")};
     MemInfo m_mem;
     ZramInfo m_zram;
     PsiInfo m_psi;

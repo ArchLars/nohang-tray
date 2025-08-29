@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <gtest/gtest.h>
 #include "SystemSnapshot.h"
+#include <QTemporaryDir>
 
 TEST(SystemSnapshotTest, RefreshPopulatesFields)
 {
@@ -13,4 +14,31 @@ TEST(SystemSnapshotTest, RefreshPopulatesFields)
     EXPECT_GE(snap.mem().swapFreeMiB, 0);
     EXPECT_GE(snap.psi().some_avg10, 0);
     EXPECT_GE(snap.psi().full_avg10, 0);
+}
+
+TEST(SystemSnapshotTest, ParsesMeminfoAndHandlesMissingPsi)
+{
+    QTemporaryDir procDir;
+    QTemporaryDir sysDir;
+
+    QFile meminfo(procDir.filePath("meminfo"));
+    ASSERT_TRUE(meminfo.open(QIODevice::WriteOnly | QIODevice::Text));
+    QTextStream ts(&meminfo);
+    ts << "MemTotal:       2048 kB\n";
+    ts << "MemAvailable:   1024 kB\n";
+    ts << "SwapTotal:       512 kB\n";
+    ts << "SwapFree:        256 kB\n";
+    meminfo.close();
+
+    SystemSnapshot snap(procDir.path(), sysDir.path());
+    snap.refresh();
+
+    EXPECT_DOUBLE_EQ(2.0, snap.mem().memTotalMiB);
+    EXPECT_DOUBLE_EQ(1.0, snap.mem().memAvailableMiB);
+    EXPECT_DOUBLE_EQ(0.5, snap.mem().swapTotalMiB);
+    EXPECT_DOUBLE_EQ(0.25, snap.mem().swapFreeMiB);
+    EXPECT_DOUBLE_EQ(50.0, snap.mem().memAvailablePercent);
+    EXPECT_DOUBLE_EQ(50.0, snap.mem().swapFreePercent);
+    EXPECT_DOUBLE_EQ(0.0, snap.psi().some_avg10);
+    EXPECT_DOUBLE_EQ(0.0, snap.psi().full_avg10);
 }
