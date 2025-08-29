@@ -36,27 +36,21 @@ QString TooltipBuilder::build(const NoHangConfig& cfg,
     };
 
     // RAM
-    s += "RAM:\n";
-    s += "  available: " + fmtMiB(snap.mem().memAvailableMiB) + " (" + fmtPct(snap.mem().memAvailablePercent) + ")\n";
+    s += "RAM: available " + fmtMiB(snap.mem().memAvailableMiB) + " (" + fmtPct(snap.mem().memAvailablePercent) + ")\n";
 
     // Swap
-    s += "Swap:\n";
-    s += "  total: " + fmtMiB(snap.mem().swapTotalMiB) + "\n";
-    s += "  free: " + fmtMiB(snap.mem().swapFreeMiB) + " (" + fmtPct(snap.mem().swapFreePercent) + ")\n";
+    s += "Swap: total " + fmtMiB(snap.mem().swapTotalMiB) + ", free " + fmtMiB(snap.mem().swapFreeMiB) + " (" + fmtPct(snap.mem().swapFreePercent) + ")\n";
 
     // ZRAM
     if (snap.zram().present) {
-        s += "ZRAM:\n";
-        s += "  size: " + fmtMiB(snap.zram().diskSizeMiB) + "\n";
-        s += "  logical used: " + fmtMiB(snap.zram().origDataMiB) + " (" + fmtPct(snap.zram().logicalUsedPercent) + ")\n";
-        s += "  physical used: " + fmtMiB(snap.zram().memUsedTotalMiB) + "\n";
+        s += "ZRAM: size " + fmtMiB(snap.zram().diskSizeMiB) + ", logical used " + fmtMiB(snap.zram().origDataMiB) + " (" + fmtPct(snap.zram().logicalUsedPercent) + "), physical used " + fmtMiB(snap.zram().memUsedTotalMiB) + "\n";
     }
 
     // PSI
-    s += "PSI:\n";
-    s += "  full avg10: " + QString::number(snap.psi().full_avg10, 'f', 2) + ", some avg10: " + QString::number(snap.psi().some_avg10, 'f', 2) + "\n";
-    if (!cfg.thresholds().psi_metrics.isEmpty()) s += "  metric: " + cfg.thresholds().psi_metrics + "\n";
-    if (th.psi_duration) s += "  duration: " + QString::number(*th.psi_duration, 'f', 0) + " s\n";
+    s += "PSI: full avg10 " + QString::number(snap.psi().full_avg10, 'f', 2) + ", some avg10 " + QString::number(snap.psi().some_avg10, 'f', 2);
+    if (!cfg.thresholds().psi_metrics.isEmpty()) s += ", metric " + cfg.thresholds().psi_metrics;
+    if (th.psi_duration) s += ", duration " + QString::number(*th.psi_duration, 'f', 0) + " s";
+    s += "\n";
 
     // Thresholds after current values
     s += "Thresholds:\n";
@@ -77,10 +71,6 @@ QString TooltipBuilder::build(const NoHangConfig& cfg,
         s += "  PSI soft action if > " + QString::number(*th.soft_psi, 'f', 0) + "\n";
     if (th.hard_psi)
         s += "  PSI hard action if > " + QString::number(*th.hard_psi, 'f', 0) + "\n";
-
-    // Short hint on actions
-    s += "Actions:\n";
-    s += "  soft: ask a target to exit cleanly, hard: force kill if pressure persists.\n";
 
     return s;
 }
