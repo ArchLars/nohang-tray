@@ -12,6 +12,7 @@ concurrency:
 jobs:
   build-debian-trixie:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     container: debian:trixie-slim
     defaults:
       run:
@@ -60,10 +61,14 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
 
       - name: Build
-        run: cmake --build build -j
+        run: |
+          (while sleep 60; do echo "still building..."; done) &
+          KEEP_ALIVE=$!
+          trap "kill $KEEP_ALIVE" EXIT
+          cmake --build build -j -- -v
 
       - name: Test
-        run: ctest --test-dir build --output-on-failure
+        run: ctest --test-dir build --progress --output-on-failure
 
       - name: Coverage
         run: |
