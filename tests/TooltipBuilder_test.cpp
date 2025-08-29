@@ -36,7 +36,7 @@ TEST(TooltipBuilderTest, BuildsSummary)
     EXPECT_TRUE(out.contains("status: active"));
     EXPECT_TRUE(out.contains("config: /path.cfg"));
     EXPECT_TRUE(out.contains("warn if free < 10.0 %"));
-    EXPECT_TRUE(out.contains("Swap:\n  free: 500 MiB (50.0 %)\n"));
+    EXPECT_TRUE(out.contains("Swap:\n  total: 1000 MiB\n  free: 500 MiB (50.0 %)\n"));
     EXPECT_TRUE(out.contains("warn if used > 30.0 %"));
     EXPECT_TRUE(out.contains("PSI:"));
     EXPECT_TRUE(out.contains("metric: full_avg10"));

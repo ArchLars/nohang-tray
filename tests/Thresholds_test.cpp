@@ -78,3 +78,17 @@ TEST(ThresholdsTest, ComputesPercentAndMiB)
     ASSERT_TRUE(out.hard_zram_used.mib.has_value());
     EXPECT_DOUBLE_EQ(450.0, out.hard_zram_used.mib.value());
 }
+
+TEST(ThresholdsTest, HandlesAbsoluteMiBValues)
+{
+    ThresholdsPercent t;
+    t.warn_mem_percent = -100.0; // 100 MiB absolute
+
+    StubSnapshot snap{1000.0, 0.0, 0.0};
+
+    const ThresholdSet out = Thresholds::compute(t, snap);
+
+    EXPECT_FALSE(out.warn_mem_free.percent.has_value());
+    ASSERT_TRUE(out.warn_mem_free.mib.has_value());
+    EXPECT_DOUBLE_EQ(100.0, out.warn_mem_free.mib.value());
+}

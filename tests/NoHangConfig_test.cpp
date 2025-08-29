@@ -37,9 +37,9 @@ TEST_F(NoHangConfigTest, ParseMiBValues) {
     cfg.ensureParsed(cfgPath);
     const auto& t = cfg.thresholds();
     ASSERT_TRUE(t.warn_mem_percent.has_value());
-    EXPECT_DOUBLE_EQ(512.0, t.warn_mem_percent.value());
+    EXPECT_DOUBLE_EQ(-512.0, t.warn_mem_percent.value());
     ASSERT_TRUE(t.warn_swap_percent_free.has_value());
-    EXPECT_DOUBLE_EQ(512.0, t.warn_swap_percent_free.value());
+    EXPECT_DOUBLE_EQ(-512.0, t.warn_swap_percent_free.value());
 }
 
 TEST_F(NoHangConfigTest, FallbackToDefaultPaths) {

@@ -79,20 +79,21 @@ void NoHangConfig::parseFile(const QString& path) {
 }
 
 std::optional<double> NoHangConfig::parsePercentOrMiB(const QString& raw) {
-    // Accept "10 %", "10%", "512 M", "512M"
+    // Accept "10 %", "10%", "512 M", "512M". Return negative values for MiB
+    // to distinguish from percents.
     const QString s = raw.simplified();
     QRegularExpression rePercent(R"(^([0-9]+(\.[0-9]+)?)\s*%$)");
-    QRegularExpression reMiB(R"(^([0-9]+(\.[0-9]+)?)\s*M(i?B)?$)", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpression reMiB(
+        R"(^([0-9]+(\.[0-9]+)?)\s*M(i?B)?$)",
+        QRegularExpression::CaseInsensitiveOption);
 
     if (auto m = rePercent.match(s); m.hasMatch()) {
-        return m.captured(1).toDouble(); // store percent as percent
+        return m.captured(1).toDouble(); // percent
     }
     if (auto m = reMiB.match(s); m.hasMatch()) {
-        // Store MiB as a negative sentinel or keep as positive and tag elsewhere.
-        // Simpler, keep positive MiB and let Thresholds convert with totals.
-        return m.captured(1).toDouble(); // MiB value
+        return -m.captured(1).toDouble(); // negative sentinel for MiB
     }
-    // If it is a bare number, treat as percent
+    // Bare number -> percent
     bool ok = false;
     const double v = s.toDouble(&ok);
     if (ok) return v;
