@@ -22,19 +22,33 @@ QString TooltipBuilder::build(const NoHangConfig& cfg,
     s += (active ? "status: active\n" : "status: inactive\n");
     if (!cfgPath.isEmpty()) s += "config: " + cfgPath + "\n";
 
+    auto appendThreshold = [&](const QString& label, const ThresholdValue& tv) {
+        if (tv.percent || tv.mib) {
+            s += label;
+            if (tv.percent) {
+                s += fmtPct(*tv.percent);
+                if (tv.mib) s += QStringLiteral(" (≈ ") + fmtMiB(*tv.mib) + QStringLiteral(")");
+            } else if (tv.mib) {
+                s += fmtMiB(*tv.mib);
+            }
+            s += QStringLiteral("\n");
+        }
+    };
+
     // RAM
     s += "RAM:\n";
     s += "  available: " + fmtMiB(snap.mem().memAvailableMiB) + " (" + fmtPct(snap.mem().memAvailablePercent) + ")\n";
-    if (th.warn_mem_free.percent) s += "  warn if free < " + fmtPct(*th.warn_mem_free.percent) + " (≈ " + (th.warn_mem_free.mib ? fmtMiB(*th.warn_mem_free.mib) : "?") + ")\n";
-    if (th.soft_mem_free.percent) s += "  soft action if free < " + fmtPct(*th.soft_mem_free.percent) + " (≈ " + (th.soft_mem_free.mib ? fmtMiB(*th.soft_mem_free.mib) : "?") + ")\n";
-    if (th.hard_mem_free.percent) s += "  hard action if free < " + fmtPct(*th.hard_mem_free.percent) + " (≈ " + (th.hard_mem_free.mib ? fmtMiB(*th.hard_mem_free.mib) : "?") + ")\n";
+    appendThreshold("  warn if free < ", th.warn_mem_free);
+    appendThreshold("  soft action if free < ", th.soft_mem_free);
+    appendThreshold("  hard action if free < ", th.hard_mem_free);
 
     // Swap
     s += "Swap:\n";
+    s += "  total: " + fmtMiB(snap.mem().swapTotalMiB) + "\n";
     s += "  free: " + fmtMiB(snap.mem().swapFreeMiB) + " (" + fmtPct(snap.mem().swapFreePercent) + ")\n";
-    if (th.warn_swap_free.percent) s += "  warn if free < " + fmtPct(*th.warn_swap_free.percent) + " (≈ " + (th.warn_swap_free.mib ? fmtMiB(*th.warn_swap_free.mib) : "?") + ")\n";
-    if (th.soft_swap_free.percent) s += "  soft action if free < " + fmtPct(*th.soft_swap_free.percent) + " (≈ " + (th.soft_swap_free.mib ? fmtMiB(*th.soft_swap_free.mib) : "?") + ")\n";
-    if (th.hard_swap_free.percent) s += "  hard action if free < " + fmtPct(*th.hard_swap_free.percent) + " (≈ " + (th.hard_swap_free.mib ? fmtMiB(*th.hard_swap_free.mib) : "?") + ")\n";
+    appendThreshold("  warn if free < ", th.warn_swap_free);
+    appendThreshold("  soft action if free < ", th.soft_swap_free);
+    appendThreshold("  hard action if free < ", th.hard_swap_free);
 
     // ZRAM
     if (snap.zram().present) {
@@ -42,9 +56,9 @@ QString TooltipBuilder::build(const NoHangConfig& cfg,
         s += "  size: " + fmtMiB(snap.zram().diskSizeMiB) + "\n";
         s += "  logical used: " + fmtMiB(snap.zram().origDataMiB) + " (" + fmtPct(snap.zram().logicalUsedPercent) + ")\n";
         s += "  physical used: " + fmtMiB(snap.zram().memUsedTotalMiB) + "\n";
-        if (th.warn_zram_used.percent) s += "  warn if used > " + fmtPct(*th.warn_zram_used.percent) + "\n";
-        if (th.soft_zram_used.percent) s += "  soft action if used > " + fmtPct(*th.soft_zram_used.percent) + "\n";
-        if (th.hard_zram_used.percent) s += "  hard action if used > " + fmtPct(*th.hard_zram_used.percent) + "\n";
+        appendThreshold("  warn if used > ", th.warn_zram_used);
+        appendThreshold("  soft action if used > ", th.soft_zram_used);
+        appendThreshold("  hard action if used > ", th.hard_zram_used);
     }
 
     // PSI

@@ -37,7 +37,7 @@ public:
 
 private:
     void parseFile(const QString& path);          // simple line parser, ignore comments and @ lines
-    static std::optional<double> parsePercentOrMiB(const QString& raw); // store percent as percent, MiB as absolute MiB
+    static std::optional<double> parsePercentOrMiB(const QString& raw); // percent positive, MiB as negative sentinel
 
     ThresholdsPercent m_t;
     QString m_srcPath;

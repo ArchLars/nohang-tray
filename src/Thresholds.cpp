@@ -2,11 +2,15 @@
 #include "pch.h"
 #include "Thresholds.h"
 
-static ThresholdValue makeVal(std::optional<double> pct, double totalMiB) {
+static ThresholdValue makeVal(std::optional<double> raw, double totalMiB) {
     ThresholdValue v;
-    if (pct) {
-        v.percent = pct;
-        v.mib = totalMiB > 0 ? std::optional<double>(*pct * totalMiB / 100.0) : std::nullopt;
+    if (raw) {
+        if (*raw < 0) {
+            v.mib = -*raw;
+        } else {
+            v.percent = raw;
+            v.mib = totalMiB > 0 ? std::optional<double>(*raw * totalMiB / 100.0) : std::nullopt;
+        }
     }
     return v;
 }
