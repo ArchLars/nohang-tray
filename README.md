@@ -11,9 +11,11 @@
    ```
 2. Generate the build directory and compile:
    ```bash
-   cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release
-   cmake --build build -j$(nproc)
-   ```
+    cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release
+    cmake --build build -j$(nproc) -- -v
+    ```
+    The `-- -v` flag forwards `-v` to Ninja so each command is logged,
+    which helps keep CI and local builds from appearing idle.
 
 ### Other distributions
 - **Debian/Ubuntu**
@@ -29,7 +31,7 @@ After installing dependencies, generate the build directory and compile:
 
 ```bash
 cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j$(nproc)
+cmake --build build -j$(nproc) -- -v
 ```
 
 ## Usage
