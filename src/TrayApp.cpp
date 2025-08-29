@@ -4,10 +4,12 @@
 #include "NoHangConfig.h"
 #include "SystemSnapshot.h"
 #include "TooltipBuilder.h"
+#include "ProcessTableAction.h"
 #include "Thresholds.h"
 
 #include <QTimer>
 #include <QFileInfo>
+#include <QAction>
 #include <KStatusNotifierItem>
 
 static constexpr int kPollMs = 5000;
@@ -29,6 +31,7 @@ void TrayApp::ensureModels() {
     if (!m_cfg)     m_cfg     = std::make_unique<NoHangConfig>(this);
     if (!m_snapshot)m_snapshot= std::make_unique<SystemSnapshot>(this);
     if (!m_tooltip) m_tooltip = std::make_unique<TooltipBuilder>(this);
+    if (!m_procAction) m_procAction = std::make_unique<ProcessTableAction>(this);
 }
 
 void TrayApp::setupStatusItem() {
@@ -37,7 +40,10 @@ void TrayApp::setupStatusItem() {
     m_sni->setTitle(QStringLiteral("nohang"));
     // Active or passive icon will be set in refreshIcon
     m_sni->setStatus(KStatusNotifierItem::Active);
-    // Optional, add a context action later, for now only an icon and tooltip
+    if (auto* menu = m_sni->contextMenu()) {
+        QAction* act = m_procAction->makeAction(menu, m_unit->resolvedConfigPath());
+        menu->addAction(act);
+    }
 }
 
 void TrayApp::setupTimers() {

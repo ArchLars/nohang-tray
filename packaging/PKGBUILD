@@ -17,6 +17,10 @@ build() {
   cmake --build build -j
 }
 
+check() {
+  ctest --test-dir build
+}
+
 package() {
   DESTDIR="$pkgdir" cmake --install build
 }

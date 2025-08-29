@@ -10,6 +10,7 @@ class NoHangUnit;
 class NoHangConfig;
 class SystemSnapshot;
 class TooltipBuilder;
+class ProcessTableAction;
 struct ThresholdSet; // from Thresholds.h
 
 // TrayApp wires everything together.
@@ -40,6 +41,7 @@ private:
     std::unique_ptr<NoHangConfig>   m_cfg;
     std::unique_ptr<SystemSnapshot> m_snapshot;
     std::unique_ptr<TooltipBuilder> m_tooltip;
+    std::unique_ptr<ProcessTableAction> m_procAction;
 
     std::unique_ptr<KStatusNotifierItem> m_sni;
     QTimer* m_pollTimer {nullptr};
