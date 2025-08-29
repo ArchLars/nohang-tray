@@ -4,50 +4,58 @@
 
 ## Build
 
-Required packages:
+### Arch Linux
+1. Install dependencies:
+   ```bash
+   sudo pacman -S --needed base-devel cmake qt6-base kstatusnotifieritem
+   ```
+2. Build the project:
+   ```bash
+   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+   cmake --build build -j
+   ```
 
-- General build tools (`base-devel`, `build-essential`, or `@development-tools`)
-- CMake
-- Qt 6 base libraries (`qt6-base` or `qt6-qtbase-devel`)
-- `kstatusnotifieritem` (part of KDE Frameworks)
+### Other distributions
+- **Debian/Ubuntu**
+  ```bash
+  sudo apt install build-essential cmake qt6-base-dev libkf6statusnotifieritem-dev
+  ```
+- **Fedora**
+  ```bash
+  sudo dnf install @development-tools cmake qt6-qtbase-devel kf6-kstatusnotifieritem-devel
+  ```
 
-### Install dependencies
+## Usage
 
-#### Arch Linux
+`nohang-desktop.service` must be active for the tray icon to appear:
 ```bash
-sudo pacman -S --needed base-devel cmake qt6-base kstatusnotifieritem
+systemctl --user enable --now nohang-desktop.service
 ```
 
-#### Debian/Ubuntu
+### Run manually
 ```bash
-sudo apt install build-essential cmake qt6-base-dev libkf6statusnotifieritem-dev
+./build/nohang-tray &
 ```
 
-#### Fedora
+### Autostart on login
 ```bash
-sudo dnf install @development-tools cmake qt6-qtbase-devel kf6-kstatusnotifieritem-devel
+mkdir -p ~/.config/autostart
+cp data/org.archlars.nohangtray.desktop ~/.config/autostart/
 ```
 
-### Build nohang-tray
-```bash
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build -j
-ctest --test-dir build
-./build/nohang-tray
-```
 ## Notes
 
+* The icon appears only when `nohang` is protecting your system.
+* Hovering the icon shows memory limits from your configuration alongside current usage.
+* This helps you gauge how close you are to running out of memory.
+
+## Technical Details
+
 * Discovers config via `systemctl show -p ExecStart nohang-desktop.service`.
-
-* Parses key thresholds from the discovered config, falls back to /etc/nohang/nohang-desktop.conf, then /usr/share/nohang/nohang.conf.
-
-* Reads `/proc/meminfo`, `/proc/pressure/memory`, `/sys/block/zram0/{disksize,mm_stat}`.
-
-* Shows a shield icon when active, tooltip lists thresholds and current values.
-
+* Parses thresholds from the discovered config, falling back to `/etc/nohang/nohang-desktop.conf` and `/usr/share/nohang/nohang.conf`.
+* Reads `/proc/meminfo`, `/proc/pressure/memory`, and `/sys/block/zram0/{disksize,mm_stat}` to populate the tooltip.
 
 ## Layout
-
 ```bash
 nohang-tray/
   CMakeLists.txt                 (Qt 6, KF6 find_package, release flags)
@@ -65,5 +73,9 @@ nohang-tray/
   packaging/
     PKGBUILD                     (depends: qt6-base, kstatusnotifieritem)
   README.md                      (how it works, build steps, permissions)
-  LICENSE                        (MIT or BSD-2)
+  LICENSE                        (MIT)
 ```
+
+## License
+
+MIT
