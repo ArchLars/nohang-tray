@@ -2,7 +2,7 @@
 
 This repository builds a small Qt/KDE tray utility. Key points:
 
-* **Build**: `cmake -S . -B build && cmake --build build`
+* **Build**: `cmake -G Ninja -S . -B build && cmake --build build -j$(nproc)`
 * **Tests**: `ctest --test-dir build`
 * **Entry point**: `src/main.cpp` boots `TrayApp`, which wires up the modules.
 * **Modules**:

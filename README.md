@@ -9,10 +9,10 @@
    ```bash
    sudo pacman -S --needed base-devel cmake qt6-base kstatusnotifieritem
    ```
-2. Build the project:
+2. Generate the build directory and compile:
    ```bash
-   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-   cmake --build build -j
+   cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release
+   cmake --build build -j$(nproc)
    ```
 
 ### Other distributions
@@ -24,6 +24,13 @@
   ```bash
   sudo dnf install @development-tools cmake qt6-qtbase-devel kf6-kstatusnotifieritem-devel
   ```
+
+After installing dependencies, generate the build directory and compile:
+
+```bash
+cmake -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+```
 
 ## Usage
 
