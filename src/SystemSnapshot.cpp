@@ -79,6 +79,25 @@ void SystemSnapshot::readZram() {
             m_zram.comprDataMiB = compr / (1024.0 * 1024.0);
             m_zram.memUsedTotalMiB = memUsed / (1024.0 * 1024.0);
         }
+    } else {
+        QFile orig(m_sysRoot + QStringLiteral("/block/zram0/orig_data_size"));
+        if (orig.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            const QString s = QString::fromUtf8(orig.readAll()).trimmed();
+            const double bytes = s.toDouble();
+            m_zram.origDataMiB = bytes / (1024.0 * 1024.0);
+        }
+        QFile compr(m_sysRoot + QStringLiteral("/block/zram0/compr_data_size"));
+        if (compr.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            const QString s = QString::fromUtf8(compr.readAll()).trimmed();
+            const double bytes = s.toDouble();
+            m_zram.comprDataMiB = bytes / (1024.0 * 1024.0);
+        }
+        QFile memUsed(m_sysRoot + QStringLiteral("/block/zram0/mem_used_total"));
+        if (memUsed.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            const QString s = QString::fromUtf8(memUsed.readAll()).trimmed();
+            const double bytes = s.toDouble();
+            m_zram.memUsedTotalMiB = bytes / (1024.0 * 1024.0);
+        }
     }
     m_zram.logicalUsedPercent = (m_zram.diskSizeMiB > 0) ? (m_zram.origDataMiB * 100.0 / m_zram.diskSizeMiB) : 0;
     // GCOVR_EXCL_STOP
