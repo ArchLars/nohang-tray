@@ -78,3 +78,31 @@ TEST(SystemSnapshotTest, ParsesMeminfoWithLeadingSpaces)
     EXPECT_DOUBLE_EQ(0.5, snap.mem().swapTotalMiB);
     EXPECT_DOUBLE_EQ(0.25, snap.mem().swapFreeMiB);
 }
+TEST(SystemSnapshotTest, FallsBackToProcSwapsIfMeminfoLacksSwap)
+{
+    QTemporaryDir procDir;
+    QTemporaryDir sysDir;
+
+    QFile meminfo(procDir.filePath("meminfo"));
+    ASSERT_TRUE(meminfo.open(QIODevice::WriteOnly | QIODevice::Text));
+    QTextStream memTs(&meminfo);
+    memTs << "MemTotal:       4096 kB\n";
+    memTs << "MemAvailable:   2048 kB\n";
+    meminfo.close();
+
+    QFile swaps(procDir.filePath("swaps"));
+    ASSERT_TRUE(swaps.open(QIODevice::WriteOnly | QIODevice::Text));
+    QTextStream swapTs(&swaps);
+    swapTs << "Filename\tType\tSize\tUsed\tPriority\n";
+    swapTs << "/dev/zram0\tpartition\t2048\t1024\t5\n";
+    swaps.close();
+
+    SystemSnapshot snap(procDir.path(), sysDir.path());
+    snap.refresh();
+
+    EXPECT_DOUBLE_EQ(4.0, snap.mem().memTotalMiB);
+    EXPECT_DOUBLE_EQ(2.0, snap.mem().memAvailableMiB);
+    EXPECT_DOUBLE_EQ(2.0, snap.mem().swapTotalMiB);
+    EXPECT_DOUBLE_EQ(1.0, snap.mem().swapFreeMiB);
+    EXPECT_DOUBLE_EQ(50.0, snap.mem().swapFreePercent);
+}

@@ -48,7 +48,30 @@ void SystemSnapshot::readMeminfo() {
 }
 
 void SystemSnapshot::readSwaps() {
-    // Optional, /proc/meminfo already provides totals. Could refine with /proc/swaps later.
+    QFile f(m_procRoot + QStringLiteral("/swaps"));
+    if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) return;
+
+    QTextStream ts(&f);
+    QString line;
+    // Skip header line
+    if (!ts.readLineInto(&line)) return;
+
+    double totalKiB = 0, freeKiB = 0;
+    while (ts.readLineInto(&line)) {
+        const QStringList parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+        if (parts.size() >= 5) {
+            const double sizeKiB = parts[2].toDouble();
+            const double usedKiB = parts[3].toDouble();
+            totalKiB += sizeKiB;
+            freeKiB  += (sizeKiB - usedKiB);
+        }
+    }
+
+    if (totalKiB > 0) {
+        m_mem.swapTotalMiB = totalKiB / 1024.0;
+        m_mem.swapFreeMiB  = freeKiB  / 1024.0;
+        m_mem.swapFreePercent = (m_mem.swapFreeMiB * 100.0 / m_mem.swapTotalMiB);
+    }
 }
 
 void SystemSnapshot::readZram() {

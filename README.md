@@ -61,7 +61,7 @@ cp data/org.archlars.nohangtray.desktop ~/.config/autostart/
 
 * Discovers config via `systemctl show -p ExecStart nohang-desktop.service`.
 * Parses thresholds from the discovered config, falling back to `/etc/nohang/nohang-desktop.conf` and `/usr/share/nohang/nohang.conf`.
-* Reads `/proc/meminfo`, `/proc/pressure/memory`, and `/sys/block/zram0/{disksize,mm_stat}` to populate the tooltip.
+* Reads `/proc/meminfo`, `/proc/swaps`, `/proc/pressure/memory`, and `/sys/block/zram0/{disksize,mm_stat}` to populate the tooltip.
 * Logs a warning if `/proc/meminfo` cannot be opened.
 
 ## Layout
