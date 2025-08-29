@@ -35,9 +35,16 @@ TEST(TooltipBuilderTest, BuildsSummary)
     QString out = tb.build(cfg, snap, true, "/path.cfg");
     EXPECT_TRUE(out.contains("status: active"));
     EXPECT_TRUE(out.contains("config: /path.cfg"));
-    EXPECT_TRUE(out.contains("warn if free < 10.0 %"));
-    EXPECT_TRUE(out.contains("Swap:\n  total: 1000 MiB\n  free: 500 MiB (50.0 %)\n"));
-    EXPECT_TRUE(out.contains("warn if used > 30.0 %"));
+
+    const int swapPos = out.indexOf("Swap:\n  total: 1000 MiB\n  free: 500 MiB (50.0 %)\n");
+    const int threshPos = out.indexOf("Thresholds:\n");
+    EXPECT_NE(-1, swapPos);
+    EXPECT_NE(-1, threshPos);
+    EXPECT_LT(swapPos, threshPos);
+
+    EXPECT_TRUE(out.contains("Thresholds:\n"));
+    EXPECT_TRUE(out.contains("RAM warn if free < 10.0 %"));
+    EXPECT_TRUE(out.contains("ZRAM warn if used > 30.0 %"));
     EXPECT_TRUE(out.contains("PSI:"));
     EXPECT_TRUE(out.contains("metric: full_avg10"));
 }

@@ -27,6 +27,9 @@ TEST(TrayAppTest, IconReflectsMemorySeverity) {
   snap.m_mem.memAvailableMiB = 35.0;
   EXPECT_EQ(QStringLiteral("security-medium"), TrayApp::iconNameFor(cfg, snap));
 
+  snap.m_mem.memAvailableMiB = 25.0;
+  EXPECT_EQ(QStringLiteral("security-medium"), TrayApp::iconNameFor(cfg, snap));
+
   snap.m_mem.memAvailableMiB = 15.0;
   EXPECT_EQ(QStringLiteral("security-high"), TrayApp::iconNameFor(cfg, snap));
 }
@@ -44,5 +47,5 @@ TEST(TrayAppTest, IconHandlesMiBThresholds) {
   EXPECT_EQ(QStringLiteral("security-low"), TrayApp::iconNameFor(cfg, snap));
 
   snap.m_mem.swapFreeMiB = 400.0;
-  EXPECT_EQ(QStringLiteral("security-high"), TrayApp::iconNameFor(cfg, snap));
+  EXPECT_EQ(QStringLiteral("security-medium"), TrayApp::iconNameFor(cfg, snap));
 }
