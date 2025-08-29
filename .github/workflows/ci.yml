@@ -35,7 +35,8 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build pkg-config \
-            qt6-base-dev libkf6statusnotifieritem-dev ccache
+            qt6-base-dev libkf6statusnotifieritem-dev ccache \
+            libgtest-dev
 
       - name: Cache ccache
         uses: actions/cache@v4
@@ -54,6 +55,9 @@ jobs:
 
       - name: Build
         run: cmake --build build -j
+
+      - name: Run tests
+        run: ctest --test-dir build
 
       - uses: actions/upload-artifact@v4
         with:

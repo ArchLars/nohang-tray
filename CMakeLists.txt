@@ -39,3 +39,6 @@ install(FILES data/org.archlars.nohangtray.desktop DESTINATION share/application
 
 # Optional, for packaging
 include(GNUInstallDirs)
+
+enable_testing()
+add_subdirectory(tests)

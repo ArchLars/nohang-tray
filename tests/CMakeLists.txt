@@ -1,0 +1,5 @@
+find_package(GTest REQUIRED)
+add_executable(NoHangConfigTest NoHangConfigTest.cpp)
+target_link_libraries(NoHangConfigTest PRIVATE GTest::gtest_main Qt6::Core)
+target_include_directories(NoHangConfigTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../src)
+add_test(NAME NoHangConfigTest COMMAND NoHangConfigTest)
