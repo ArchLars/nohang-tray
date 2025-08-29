@@ -19,22 +19,26 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 find_package(KF6StatusNotifierItem REQUIRED)
 
 add_library(nohang_core STATIC
-  src/TrayApp.cpp
   src/NoHangUnit.cpp
   src/NoHangConfig.cpp
   src/SystemSnapshot.cpp
   src/Thresholds.cpp
   src/TooltipBuilder.cpp
-  src/ProcessTableAction.cpp
 )
 target_include_directories(nohang_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(nohang_core
-  PUBLIC Qt6::Core Qt6::Widgets
-  PRIVATE KF6::StatusNotifierItem)
+target_link_libraries(nohang_core PUBLIC Qt6::Core)
 target_precompile_headers(nohang_core PRIVATE src/pch.h)
 
+add_library(tray_ui STATIC
+  src/TrayApp.cpp
+  src/ProcessTableAction.cpp
+)
+target_include_directories(tray_ui PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(tray_ui PUBLIC Qt6::Widgets KF6::StatusNotifierItem)
+target_precompile_headers(tray_ui PRIVATE src/pch.h)
+
 add_executable(nohang-tray src/main.cpp)
-target_link_libraries(nohang-tray PRIVATE nohang_core Qt6::Core Qt6::Widgets KF6::StatusNotifierItem)
+target_link_libraries(nohang-tray PRIVATE tray_ui nohang_core)
 target_precompile_headers(nohang-tray PRIVATE src/pch.h)
 
 install(TARGETS nohang-tray RUNTIME DESTINATION bin)
@@ -83,7 +87,7 @@ if (BUILD_TESTING)
   add_test(NAME TooltipBuilder_test COMMAND TooltipBuilder_test)
 
   add_executable(ProcessTableAction_test tests/ProcessTableAction_test.cpp)
-  target_link_libraries(ProcessTableAction_test PRIVATE nohang_core Qt6::Core Qt6::Widgets GTest::gtest GTest::gtest_main)
+  target_link_libraries(ProcessTableAction_test PRIVATE tray_ui nohang_core GTest::gtest GTest::gtest_main)
   target_precompile_headers(ProcessTableAction_test PRIVATE src/pch.h)
   add_test(NAME ProcessTableAction_test COMMAND ProcessTableAction_test)
 endif()
