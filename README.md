@@ -48,6 +48,7 @@ cp data/org.archlars.nohangtray.desktop ~/.config/autostart/
 * The icon appears only when `nohang` is protecting your system.
 * Hovering the icon shows memory limits from your configuration alongside current usage.
 * This helps you gauge how close you are to running out of memory.
+* Robust `/proc/meminfo` parsing tolerates leading whitespace.
 
 ## Technical Details
 
