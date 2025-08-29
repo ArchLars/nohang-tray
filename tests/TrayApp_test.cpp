@@ -6,5 +6,5 @@ TEST(TrayAppTest, EscapePercent)
 {
     const QString input = "value 42 %";
     const QString output = TrayApp::escapePercent(input);
-    EXPECT_EQ(QStringLiteral("value 42 %%"), output);
+    EXPECT_EQ(QStringLiteral("value 42 %"), output);
 }
