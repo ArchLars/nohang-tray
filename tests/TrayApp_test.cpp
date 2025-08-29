@@ -147,3 +147,17 @@ TEST(TrayAppTest, IconPsiMetricIgnoresPartialMatch) {
   snap.m_psi.full_avg10 = 5.0;  // below warn
   EXPECT_EQ(QStringLiteral("security-low"), TrayApp::iconNameFor(cfg, snap));
 }
+
+TEST(TrayAppTest, IconIgnoresZeroZramThresholds) {
+  NoHangConfig cfg;
+  cfg.m_t.warn_zram_percent_used = 0.0;
+  cfg.m_t.soft_zram_percent_used = 0.0;
+  cfg.m_t.hard_zram_percent_used = 0.0;
+
+  SystemSnapshot snap;
+  snap.m_zram.present = true;
+  snap.m_zram.diskSizeMiB = 100.0;
+  snap.m_zram.origDataMiB = 80.0;
+
+  EXPECT_EQ(QStringLiteral("security-low"), TrayApp::iconNameFor(cfg, snap));
+}
