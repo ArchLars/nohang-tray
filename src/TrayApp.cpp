@@ -20,6 +20,13 @@ TrayApp::~TrayApp() = default;
 
 TrayApp::TrayApp(QObject* parent) : QObject(parent) {}
 
+QString TrayApp::escapePercent(const QString& s)
+{
+    QString out = s;
+    out.replace(QStringLiteral("%"), QStringLiteral("%%"));
+    return out;
+}
+
 void TrayApp::start() {
     ensureModels();
     setupStatusItem();
@@ -96,7 +103,7 @@ void TrayApp::refreshTooltip() {
     // Build "configured vs current" text for RAM, swap, zram, PSI
     const QString tipTitle = QStringLiteral("nohang status");
     const QString tipIcon  = QStringLiteral("security-medium");
-    const QString tipText  = m_tooltip->build(*m_cfg, *m_snapshot, m_unit->isActive(), m_unit->resolvedConfigPath());
+    const QString tipText  = escapePercent(m_tooltip->build(*m_cfg, *m_snapshot, m_unit->isActive(), m_unit->resolvedConfigPath()));
 
     // KStatusNotifierItem tooltips take icon-name, title, subtitle
     m_sni->setToolTip(tipIcon, tipTitle, tipText);
