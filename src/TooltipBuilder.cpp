@@ -1,4 +1,5 @@
 // ===== src/TooltipBuilder.cpp =====
+#include "pch.h"
 #include "TooltipBuilder.h"
 #include "NoHangConfig.h"
 #include "SystemSnapshot.h"

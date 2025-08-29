@@ -1,3 +1,4 @@
+#include "pch.h"
 #include <gtest/gtest.h>
 #define private public
 #include "NoHangUnit.h"

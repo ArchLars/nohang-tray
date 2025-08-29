@@ -1,4 +1,5 @@
 // ===== src/NoHangConfig.cpp =====
+#include "pch.h"
 #include "NoHangConfig.h"
 #include <QFile>
 #include <QFileInfo>

@@ -1,4 +1,5 @@
 // ===== src/SystemSnapshot.cpp =====
+#include "pch.h"
 #include "SystemSnapshot.h"
 #include <QFile>
 #include <QTextStream>

@@ -1,4 +1,5 @@
 // ===== src/Thresholds.cpp =====
+#include "pch.h"
 #include "Thresholds.h"
 
 static ThresholdValue makeVal(std::optional<double> pct, double totalMiB) {
