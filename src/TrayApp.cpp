@@ -36,8 +36,10 @@ QString TrayApp::iconNameFor(const NoHangConfig &cfg,
 
   // Choose PSI metric if thresholds configure one; default to full_avg10
   double psiVal = snap.psi().full_avg10;
-  if (th.psi_metrics.contains(QStringLiteral("some")))
+  if (th.psi_metrics == QStringLiteral("some"))
     psiVal = snap.psi().some_avg10;
+  else if (th.psi_metrics == QStringLiteral("full"))
+    psiVal = snap.psi().full_avg10;
 
   const bool critical =
       below(snap.mem().memAvailableMiB, th.hard_mem_free.mib) ||
