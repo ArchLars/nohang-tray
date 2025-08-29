@@ -7,6 +7,9 @@
 
 SystemSnapshot::SystemSnapshot(QObject* parent) : QObject(parent) {}
 
+SystemSnapshot::SystemSnapshot(const QString& procRoot, const QString& sysRoot, QObject* parent)
+    : QObject(parent), m_procRoot(procRoot), m_sysRoot(sysRoot) {}
+
 void SystemSnapshot::refresh() {
     readMeminfo();
     readSwaps();
@@ -15,7 +18,7 @@ void SystemSnapshot::refresh() {
 }
 
 void SystemSnapshot::readMeminfo() {
-    QFile f(QStringLiteral("/proc/meminfo"));
+    QFile f(m_procRoot + QStringLiteral("/meminfo"));
     if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) return;
     QTextStream ts(&f);
     double memTotalKiB = 0, memAvailableKiB = 0, swapTotalKiB = 0, swapFreeKiB = 0;
@@ -40,7 +43,7 @@ void SystemSnapshot::readSwaps() {
 }
 
 void SystemSnapshot::readZram() {
-    QFile disk(QStringLiteral("/sys/block/zram0/disksize"));
+    QFile disk(m_sysRoot + QStringLiteral("/block/zram0/disksize"));
     if (!disk.exists()) {
         m_zram = {};
         return;
@@ -54,7 +57,7 @@ void SystemSnapshot::readZram() {
         m_zram.diskSizeMiB = bytes / (1024.0 * 1024.0);
     }
 
-    QFile mm(QStringLiteral("/sys/block/zram0/mm_stat"));
+    QFile mm(m_sysRoot + QStringLiteral("/block/zram0/mm_stat"));
     if (mm.open(QIODevice::ReadOnly | QIODevice::Text)) {
         const QString s = QString::fromUtf8(mm.readAll()).trimmed();
         const QStringList parts = s.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
@@ -73,7 +76,7 @@ void SystemSnapshot::readZram() {
 }
 
 void SystemSnapshot::readPsi() {
-    QFile f(QStringLiteral("/proc/pressure/memory"));
+    QFile f(m_procRoot + QStringLiteral("/pressure/memory"));
     if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
         m_psi = {};
         return;
