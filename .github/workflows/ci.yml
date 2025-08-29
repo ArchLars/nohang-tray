@@ -35,7 +35,8 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends \
             build-essential cmake ninja-build pkg-config \
-            qt6-base-dev libkf6statusnotifieritem-dev ccache
+            qt6-base-dev libkf6statusnotifieritem-dev ccache \
+            ca-certificates
 
       - name: Cache ccache
         uses: actions/cache@v4
