@@ -1,4 +1,5 @@
 // ===== src/main.cpp =====
+#include "pch.h"
 #include <QApplication>
 #include "TrayApp.h"
 

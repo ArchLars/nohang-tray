@@ -1,4 +1,5 @@
 // ===== src/ProcessTableAction.cpp =====
+#include "pch.h"
 #include "ProcessTableAction.h"
 #include <QAction>
 #include <QProcess>

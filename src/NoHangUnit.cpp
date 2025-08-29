@@ -1,4 +1,5 @@
 // ===== src/NoHangUnit.cpp =====
+#include "pch.h"
 #include "NoHangUnit.h"
 #include <QProcess>
 #include <QStringList>

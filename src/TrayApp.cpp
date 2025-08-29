@@ -1,4 +1,5 @@
 // ===== src/TrayApp.cpp =====
+#include "pch.h"
 #include "TrayApp.h"
 #include "NoHangUnit.h"
 #include "NoHangConfig.h"
