@@ -4,6 +4,8 @@ project(nohang-tray VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 
+include(CTest)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -39,3 +41,20 @@ install(FILES data/org.archlars.nohangtray.desktop DESTINATION share/application
 
 # Optional, for packaging
 include(GNUInstallDirs)
+
+if (BUILD_TESTING)
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+  )
+  FetchContent_MakeAvailable(googletest)
+
+  add_executable(NoHangConfig_test
+    tests/NoHangConfig_test.cpp
+    src/NoHangConfig.cpp
+  )
+  target_include_directories(NoHangConfig_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries(NoHangConfig_test PRIVATE Qt6::Core gtest gtest_main)
+  add_test(NAME NoHangConfig_test COMMAND NoHangConfig_test)
+endif()
