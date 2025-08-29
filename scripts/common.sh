@@ -28,7 +28,7 @@ log() {
 
 retry() {
   local n=0 max=${2:-5} delay=${3:-2}
-  until "$1"; do
+  until eval "$1"; do  # Add eval here
     n=$((n+1))
     if (( n >= max )); then
       log "command failed after ${n} attempts: $1"
