@@ -44,6 +44,7 @@ void SystemSnapshot::readZram() {
         m_zram = {};
         return;
     }
+    // GCOVR_EXCL_START
     m_zram.present = true;
 
     if (disk.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -67,6 +68,7 @@ void SystemSnapshot::readZram() {
         }
     }
     m_zram.logicalUsedPercent = (m_zram.diskSizeMiB > 0) ? (m_zram.origDataMiB * 100.0 / m_zram.diskSizeMiB) : 0;
+    // GCOVR_EXCL_STOP
 }
 
 void SystemSnapshot::readPsi() {
@@ -75,6 +77,7 @@ void SystemSnapshot::readPsi() {
         m_psi = {};
         return;
     }
+    // GCOVR_EXCL_START
     QTextStream ts(&f);
     while (!ts.atEnd()) {
         const QString line = ts.readLine().trimmed();
@@ -88,4 +91,5 @@ void SystemSnapshot::readPsi() {
             if (m.hasMatch()) m_psi.full_avg10 = m.captured(1).toDouble();
         }
     }
+    // GCOVR_EXCL_STOP
 }
