@@ -36,17 +36,16 @@ TEST(TooltipBuilderTest, BuildsSummary)
     EXPECT_TRUE(out.contains("status: active"));
     EXPECT_TRUE(out.contains("config: /path.cfg"));
 
-    const int swapPos = out.indexOf("Swap:\n  total: 1000 MiB\n  free: 500 MiB (50.0 %)\n");
-    const int threshPos = out.indexOf("Thresholds:\n");
-    EXPECT_NE(-1, swapPos);
-    EXPECT_NE(-1, threshPos);
-    EXPECT_LT(swapPos, threshPos);
+    EXPECT_TRUE(out.contains("RAM: available 1000 MiB (50.0 %)"));
+    EXPECT_TRUE(out.contains("Swap: total 1000 MiB, free 500 MiB (50.0 %)"));
+    EXPECT_TRUE(out.contains("ZRAM: size 100 MiB, logical used 50 MiB (50.0 %), physical used 10 MiB"));
+    EXPECT_TRUE(out.contains("PSI: full avg10 0.30, some avg10 1.20, metric full_avg10, duration 60 s"));
 
     EXPECT_TRUE(out.contains("Thresholds:\n"));
     EXPECT_TRUE(out.contains("RAM warn if free < 10.0 %"));
     EXPECT_TRUE(out.contains("ZRAM warn if used > 30.0 %"));
-    EXPECT_TRUE(out.contains("PSI:"));
-    EXPECT_TRUE(out.contains("metric: full_avg10"));
+    EXPECT_TRUE(out.contains("PSI warn if > 50"));
+    EXPECT_EQ(-1, out.indexOf("Actions:"));
 }
 
 TEST(TooltipBuilderTest, IncludesAllSections)
@@ -84,12 +83,12 @@ TEST(TooltipBuilderTest, IncludesAllSections)
 
     TooltipBuilder tb;
     const QString out = tb.build(cfg, snap, true, "/etc/nohang.cfg");
-    EXPECT_NE(-1, out.indexOf("RAM:\n"));
-    EXPECT_NE(-1, out.indexOf("Swap:\n"));
-    EXPECT_NE(-1, out.indexOf("ZRAM:\n"));
-    EXPECT_NE(-1, out.indexOf("PSI:\n"));
+    EXPECT_NE(-1, out.indexOf("RAM:"));
+    EXPECT_NE(-1, out.indexOf("Swap:"));
+    EXPECT_NE(-1, out.indexOf("ZRAM:"));
+    EXPECT_NE(-1, out.indexOf("PSI:"));
     EXPECT_NE(-1, out.indexOf("Thresholds:\n"));
-    EXPECT_NE(-1, out.indexOf("Actions:\n"));
+    EXPECT_EQ(-1, out.indexOf("Actions:"));
     EXPECT_TRUE(out.contains("RAM hard action if free <"));
     EXPECT_TRUE(out.contains("Swap hard action if free <"));
     EXPECT_TRUE(out.contains("ZRAM hard action if used >"));
