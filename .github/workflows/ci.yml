@@ -13,6 +13,9 @@ jobs:
   build-debian-trixie:
     runs-on: ubuntu-latest
     container: debian:trixie-slim
+    defaults:
+      run:
+        shell: bash -eux {0}
     env:
       DEBIAN_FRONTEND: noninteractive
       CCACHE_DIR: /ccache
