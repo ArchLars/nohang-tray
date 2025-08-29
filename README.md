@@ -3,8 +3,33 @@
 [nohang](https://github.com/hakavlad/nohang) is a daemon that watches system memory pressure and takes action before the kernel freezes. `nohang-tray` is a KDE Plasma tray utility that lets you see whether `nohang-desktop.service` is active and, on hover, review the actions `nohang` will take based on the current configuration and live system values.
 
 ## Build
+
+Required packages:
+
+- General build tools (`base-devel`, `build-essential`, or `@development-tools`)
+- CMake
+- Qt 6 base libraries (`qt6-base` or `qt6-qtbase-devel`)
+- `kstatusnotifieritem` (part of KDE Frameworks)
+
+### Install dependencies
+
+#### Arch Linux
 ```bash
 sudo pacman -S --needed base-devel cmake qt6-base kstatusnotifieritem
+```
+
+#### Debian/Ubuntu
+```bash
+sudo apt install build-essential cmake qt6-base-dev libkf6statusnotifieritem-dev
+```
+
+#### Fedora
+```bash
+sudo dnf install @development-tools cmake qt6-qtbase-devel kf6-kstatusnotifieritem-devel
+```
+
+### Build nohang-tray
+```bash
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
 ctest --test-dir build
