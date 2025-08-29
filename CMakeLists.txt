@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.24)
 project(nohang-tray VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_CXX_COMPILER_LAUNCHER ccache)
+set(CMAKE_C_COMPILER_LAUNCHER ccache)
 
 include(CTest)
 
