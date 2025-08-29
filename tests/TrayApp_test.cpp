@@ -101,7 +101,7 @@ TEST(TrayAppTest, IconIgnoresMissingSwapAndZram) {
   EXPECT_EQ(QStringLiteral("security-low"), TrayApp::iconNameFor(cfg, snap));
 }
 
-TEST(TrayAppTest, IconUsesPsiMetric) {
+TEST(TrayAppTest, IconUsesSomePsiMetric) {
   NoHangConfig cfg;
   cfg.m_t.warn_psi = 10.0;
   cfg.m_t.hard_psi = 20.0;
@@ -116,5 +116,34 @@ TEST(TrayAppTest, IconUsesPsiMetric) {
   EXPECT_EQ(QStringLiteral("security-medium"), TrayApp::iconNameFor(cfg, snap));
 
   snap.m_psi.some_avg10 = 5.0; // below warn
+  EXPECT_EQ(QStringLiteral("security-low"), TrayApp::iconNameFor(cfg, snap));
+}
+
+TEST(TrayAppTest, IconUsesFullPsiMetric) {
+  NoHangConfig cfg;
+  cfg.m_t.warn_psi = 10.0;
+  cfg.m_t.hard_psi = 20.0;
+  cfg.m_t.psi_metrics = QStringLiteral("full");
+
+  SystemSnapshot snap;
+  snap.m_psi.full_avg10 = 25.0; // above hard
+  snap.m_psi.some_avg10 = 5.0;
+  EXPECT_EQ(QStringLiteral("security-high"), TrayApp::iconNameFor(cfg, snap));
+
+  snap.m_psi.full_avg10 = 15.0; // between warn and hard
+  EXPECT_EQ(QStringLiteral("security-medium"), TrayApp::iconNameFor(cfg, snap));
+
+  snap.m_psi.full_avg10 = 5.0; // below warn
+  EXPECT_EQ(QStringLiteral("security-low"), TrayApp::iconNameFor(cfg, snap));
+}
+
+TEST(TrayAppTest, IconPsiMetricIgnoresPartialMatch) {
+  NoHangConfig cfg;
+  cfg.m_t.warn_psi = 10.0;
+  cfg.m_t.psi_metrics = QStringLiteral("someone");
+
+  SystemSnapshot snap;
+  snap.m_psi.some_avg10 = 15.0; // would trigger warn if used
+  snap.m_psi.full_avg10 = 5.0;  // below warn
   EXPECT_EQ(QStringLiteral("security-low"), TrayApp::iconNameFor(cfg, snap));
 }
