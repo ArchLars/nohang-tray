@@ -6,8 +6,8 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Versions and prefixes (override via env before calling the scripts)
-: "${QT_VER:=6.9.0}"                    # Fixed: Qt 6.9.0 exists, 6.9.2 does not
-: "${QT_ARCH:=linux_gcc_64}"            # Fixed: Use linux_gcc_64 for Qt 6.x on Linux
+: "${QT_VER:=6.9.1}"                    # Fixed: Use Qt 6.9.1 (confirmed available)
+: "${QT_ARCH:=gcc_64}"                  # Fixed: Use gcc_64 for Qt 6.x on Linux (not linux_gcc_64)
 : "${QT_ROOT:=/opt/qt}"
 : "${KF_VER:=6.14.0}"                   # KDE Frameworks version to build
 : "${KF_PREFIX:=/opt/kf6}"
@@ -93,17 +93,31 @@ install_aqt() {
 
 install_qt() {
   mkdir -p "${QT_ROOT}"
+  
+  # First check what architectures are available for this Qt version
+  log "checking available architectures for Qt ${QT_VER}"
+  python3 -m aqt list-qt linux desktop --arch "${QT_VER}" || {
+    log "failed to list architectures, trying with latest available version"
+    log "available Qt versions:"
+    python3 -m aqt list-qt linux desktop | tail -10
+    exit 1
+  }
+  
+  log "installing Qt ${QT_VER} with architecture ${QT_ARCH}"
   python3 -m aqt install-qt linux desktop "${QT_VER}" "${QT_ARCH}" -O "${QT_ROOT}"
   
-  # Fix: Check the actual installed path
+  # Check the actual installed path
   local actual_path="${QT_ROOT}/${QT_VER}/${QT_ARCH}"
   test -x "${actual_path}/bin/qmake6" || { 
     log "Qt not found at ${actual_path}"; 
+    log "checking what was actually installed:"
+    find "${QT_ROOT}" -name "qmake*" -type f 2>/dev/null || true
     exit 1; 
   }
 
   # Update QT_PREFIX to match actual installation
   export QT_PREFIX="${actual_path}"
+  log "Qt successfully installed at ${QT_PREFIX}"
 }
 
 fetch_tarball() {
