@@ -42,7 +42,18 @@ install(FILES data/org.archlars.nohangtray.desktop DESTINATION share/application
 include(GNUInstallDirs)
 
 if (BUILD_TESTING)
-  find_package(GTest REQUIRED)
+  include(FetchContent)
+  find_package(GTest QUIET)
+  if (NOT GTest_FOUND)
+    message(STATUS "GTest not found, fetching...")
+    FetchContent_Declare(
+      googletest
+      URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.tar.gz
+    )
+    # Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest)
+  endif()
 
   add_executable(NoHangConfig_test tests/NoHangConfig_test.cpp)
   target_link_libraries(NoHangConfig_test PRIVATE nohang_core Qt6::Core GTest::gtest GTest::gtest_main)
