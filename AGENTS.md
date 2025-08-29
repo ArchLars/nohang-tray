@@ -2,5 +2,4 @@ You will follow TDD discipline – meaning when tasked with writing a feature, f
 
 Refer to `CODING_GUIDE.md` for an overview of the project structure, build, and test commands.
 
-## Phase 2 – Feature expansion
-(Tasks for this phase will be defined in future instructions.)
+
