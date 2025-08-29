@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QAction>
 #include <QDialog>
+#include <QElapsedTimer>
+#include <QEventLoop>
 #include <QTemporaryDir>
 #include <QTextEdit>
 #include <QFile>
@@ -10,6 +12,23 @@
 #define private public
 #include "ProcessTableAction.h"
 #undef private
+
+static QDialog* waitForDialog(const QString& title, int timeoutMs = 5000)
+{
+    QElapsedTimer t;
+    t.start();
+    while (t.elapsed() < timeoutMs) {
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+        for (QWidget* w : QApplication::topLevelWidgets()) {
+            if (auto* dlg = qobject_cast<QDialog*>(w)) {
+                if (dlg->windowTitle() == title) {
+                    return dlg;
+                }
+            }
+        }
+    }
+    return nullptr;
+}
 
 TEST(ProcessTableActionTest, StoresConfigPathAndCreatesAction)
 {
@@ -45,19 +64,65 @@ TEST(ProcessTableActionTest, RunTasksDisplaysOutput)
 
     ProcessTableAction act;
     act.runTasks();
-    QApplication::processEvents();
+    QDialog* dlg = waitForDialog("nohang --tasks");
+    ASSERT_NE(nullptr, dlg);
+    QTextEdit* edit = dlg->findChild<QTextEdit*>();
+    ASSERT_NE(nullptr, edit);
+    EXPECT_EQ(QStringLiteral("dummy output\n"), edit->toPlainText());
+    dlg->close();
+}
 
-    bool found = false;
-    for (QWidget* w : QApplication::topLevelWidgets()) {
-        if (auto* dlg = qobject_cast<QDialog*>(w)) {
-            if (dlg->windowTitle() == "nohang --tasks") {
-                QTextEdit* edit = dlg->findChild<QTextEdit*>();
-                ASSERT_NE(nullptr, edit);
-                EXPECT_EQ(QStringLiteral("dummy output\n"), edit->toPlainText());
-                dlg->close();
-                found = true;
-            }
-        }
-    }
-    EXPECT_TRUE(found);
+TEST(ProcessTableActionTest, RunTasksTimesOutShowsMessage)
+{
+    QTemporaryDir dir;
+    QFile script(dir.filePath("nohang"));
+    ASSERT_TRUE(script.open(QIODevice::WriteOnly | QIODevice::Text));
+    script.write("#!/bin/sh\nsleep 5\necho done\n");
+    script.close();
+    QFile::setPermissions(script.fileName(), QFile::ExeUser | QFile::ExeGroup | QFile::ExeOther |
+                                        QFile::ReadUser | QFile::ReadGroup | QFile::ReadOther);
+    QByteArray newPath = dir.path().toUtf8() + ':' + qgetenv("PATH");
+    qputenv("PATH", newPath);
+
+    int argc = 0;
+    char** argv = nullptr;
+    qputenv("QT_QPA_PLATFORM", QByteArray("offscreen"));
+    QApplication app(argc, argv);
+
+    ProcessTableAction act;
+    act.runTasks();
+    QDialog* dlg = waitForDialog("nohang --tasks", 7000);
+    ASSERT_NE(nullptr, dlg);
+    QTextEdit* edit = dlg->findChild<QTextEdit*>();
+    ASSERT_NE(nullptr, edit);
+    EXPECT_TRUE(edit->toPlainText().contains("timed out"));
+    dlg->close();
+}
+
+TEST(ProcessTableActionTest, RunTasksDisplaysErrorOnFailure)
+{
+    QTemporaryDir dir;
+    QFile script(dir.filePath("nohang"));
+    ASSERT_TRUE(script.open(QIODevice::WriteOnly | QIODevice::Text));
+    script.write("#!/bin/sh\necho oops >&2\nexit 1\n");
+    script.close();
+    QFile::setPermissions(script.fileName(), QFile::ExeUser | QFile::ExeGroup | QFile::ExeOther |
+                                        QFile::ReadUser | QFile::ReadGroup | QFile::ReadOther);
+    QByteArray newPath = dir.path().toUtf8() + ':' + qgetenv("PATH");
+    qputenv("PATH", newPath);
+
+    int argc = 0;
+    char** argv = nullptr;
+    qputenv("QT_QPA_PLATFORM", QByteArray("offscreen"));
+    QApplication app(argc, argv);
+
+    ProcessTableAction act;
+    act.runTasks();
+    QDialog* dlg = waitForDialog("nohang --tasks");
+    ASSERT_NE(nullptr, dlg);
+    QTextEdit* edit = dlg->findChild<QTextEdit*>();
+    ASSERT_NE(nullptr, edit);
+    EXPECT_TRUE(edit->toPlainText().contains("failed"));
+    EXPECT_TRUE(edit->toPlainText().contains("exit code 1"));
+    dlg->close();
 }

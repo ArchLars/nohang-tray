@@ -57,6 +57,7 @@ cp data/org.archlars.nohangtray.desktop ~/.config/autostart/
 * The icon appears only when `nohang` is protecting your system.
 * Hovering the icon shows memory limits from your configuration alongside current usage.
 * This helps you gauge how close you are to running out of memory.
+* The `nohang --tasks` viewer times out after 3\u202fs and reports failures if `nohang` exits with an error.
 * Icon color reflects severity: green when resources are plentiful, yellow when warn or soft thresholds are reached, and red for critical conditions.
 * Thresholds in configuration files can be written as percentages (e.g. `10%`) or as absolute MiB values (e.g. `512 MiB`).
 * Robust `/proc/meminfo` parsing tolerates leading whitespace, and `/proc/swaps` totals ensure swap usage is always reported.
