@@ -10,14 +10,16 @@ class NoHangUnit : public QObject {
 public:
     explicit NoHangUnit(QObject* parent = nullptr);
 
-    bool isActive() const;                 // systemctl is-active nohang-desktop.service
-    QString configPath() const;            // parse ExecStart for --config
-    QString resolvedConfigPath() const;    // cached, or fallback to defaults
+    bool isActive() const;                           // systemctl is-active nohang-desktop.service
+    QString configPath(bool refresh = false) const;  // parse ExecStart for --config
+    QString resolvedConfigPath() const;              // cached, or fallback to defaults
 
-private:
-    QString readExecStart() const;
+protected:
+    virtual QString readExecStart() const;
     QString parseConfigFromExec(const QString& execStart) const;
 
+private:
     mutable QString m_cachedConfig;
     mutable bool m_haveCached {false};
+    mutable QString m_lastExecStart;
 };

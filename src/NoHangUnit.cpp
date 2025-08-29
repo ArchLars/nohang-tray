@@ -16,15 +16,16 @@ bool NoHangUnit::isActive() const {
     return p.exitStatus() == QProcess::NormalExit && p.exitCode() == 0;
 }
 
-QString NoHangUnit::configPath() const {
-    if (!m_haveCached) {
-        const auto exec = readExecStart();
+QString NoHangUnit::configPath(bool refresh) const {
+    const auto exec = readExecStart();
+    if (refresh || !m_haveCached || exec != m_lastExecStart) {
         m_cachedConfig = parseConfigFromExec(exec);
         if (m_cachedConfig.isEmpty()) {
             // Fallbacks, first etc, then distro defaults
             m_cachedConfig = QStringLiteral("/etc/nohang/nohang-desktop.conf");
         }
         m_haveCached = true;
+        m_lastExecStart = exec;
     }
     return m_cachedConfig;
 }
