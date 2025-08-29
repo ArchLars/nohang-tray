@@ -71,3 +71,47 @@ TEST_F(NoHangConfigTest, IgnoreCommentsAndEmptyLines) {
     EXPECT_FALSE(t.warn_mem_percent.has_value());
 }
 
+TEST_F(NoHangConfigTest, MissingConfigClearsState) {
+    // ensure no default config is present
+    QFile::remove("/usr/share/nohang/nohang.conf");
+
+    NoHangConfig cfg;
+    cfg.ensureParsed("/nonexistent/path.conf");
+
+    EXPECT_TRUE(cfg.sourcePath().isEmpty());
+    const auto& t = cfg.thresholds();
+    EXPECT_FALSE(t.warn_mem_percent.has_value());
+    EXPECT_TRUE(t.psi_metrics.isEmpty());
+}
+
+TEST_F(NoHangConfigTest, UnreadableConfigClearsThresholds) {
+    QTemporaryDir dir; // pass a directory instead of a file
+
+    NoHangConfig cfg;
+    cfg.ensureParsed(dir.path());
+
+    const auto& t = cfg.thresholds();
+    EXPECT_FALSE(t.warn_mem_percent.has_value());
+}
+
+TEST_F(NoHangConfigTest, ParsePsiAndBareNumberAndInvalid) {
+    QTemporaryDir dir;
+    QString cfgPath = dir.filePath("config.conf");
+    writeConfig(cfgPath,
+                "warning_threshold_min_mem=5\n"
+                "soft_threshold_min_mem=abc\n"
+                "psi_metrics=full_avg10\n"
+                "psi_excess_duration=12\n");
+
+    NoHangConfig cfg;
+    cfg.ensureParsed(cfgPath);
+    const auto& t = cfg.thresholds();
+
+    ASSERT_TRUE(t.warn_mem_percent.has_value());
+    EXPECT_DOUBLE_EQ(5.0, t.warn_mem_percent.value());
+    EXPECT_FALSE(t.soft_mem_percent.has_value());
+    EXPECT_EQ("full_avg10", t.psi_metrics);
+    ASSERT_TRUE(t.psi_duration.has_value());
+    EXPECT_DOUBLE_EQ(12.0, t.psi_duration.value());
+}
+
