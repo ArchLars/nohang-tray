@@ -1,0 +1,51 @@
+# Build artifacts
+build/
+build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# Qt/KDE auto-generated sources
+moc_*
+ui_*
+qrc_*
+*_automoc.cpp
+*.moc
+
+# Compiled objects and binaries
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.dylib
+*.lib
+*.exe
+
+# Packaging outputs
+packaging/pkg/
+packaging/src/
+packaging/*.pkg.tar.*
+packaging/*.tar.*
+
+# Test/coverage files
+*.gcda
+*.gcno
+*.profraw
+*.profdata
+
+# IDE/editor files
+*.user
+*.user.*
+*.kdev4
+*.kate-swp
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS-specific files
+.DS_Store
+Thumbs.db
