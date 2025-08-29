@@ -8,6 +8,7 @@ KDE Plasma tray icon that indicates whether `nohang-desktop.service` is active, 
 sudo pacman -S --needed base-devel cmake qt6-base kstatusnotifieritem
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j
+ctest --test-dir build
 ./build/nohang-tray
 ```
 ## Notes

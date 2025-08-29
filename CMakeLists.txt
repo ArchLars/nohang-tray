@@ -66,4 +66,39 @@ if (BUILD_TESTING)
   target_include_directories(Thresholds_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries(Thresholds_test PRIVATE Qt6::Core gtest gtest_main)
   add_test(NAME Thresholds_test COMMAND Thresholds_test)
+
+  add_executable(SystemSnapshot_test
+    tests/SystemSnapshot_test.cpp
+    src/SystemSnapshot.cpp
+  )
+  target_include_directories(SystemSnapshot_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries(SystemSnapshot_test PRIVATE Qt6::Core gtest gtest_main)
+  add_test(NAME SystemSnapshot_test COMMAND SystemSnapshot_test)
+
+  add_executable(NoHangUnit_test
+    tests/NoHangUnit_test.cpp
+    src/NoHangUnit.cpp
+  )
+  target_include_directories(NoHangUnit_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries(NoHangUnit_test PRIVATE Qt6::Core gtest gtest_main)
+  add_test(NAME NoHangUnit_test COMMAND NoHangUnit_test)
+
+  add_executable(TooltipBuilder_test
+    tests/TooltipBuilder_test.cpp
+    src/TooltipBuilder.cpp
+    src/NoHangConfig.cpp
+    src/Thresholds.cpp
+    src/SystemSnapshot.cpp
+  )
+  target_include_directories(TooltipBuilder_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries(TooltipBuilder_test PRIVATE Qt6::Core gtest gtest_main)
+  add_test(NAME TooltipBuilder_test COMMAND TooltipBuilder_test)
+
+  add_executable(ProcessTableAction_test
+    tests/ProcessTableAction_test.cpp
+    src/ProcessTableAction.cpp
+  )
+  target_include_directories(ProcessTableAction_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries(ProcessTableAction_test PRIVATE Qt6::Core Qt6::Widgets gtest gtest_main)
+  add_test(NAME ProcessTableAction_test COMMAND ProcessTableAction_test)
 endif()
