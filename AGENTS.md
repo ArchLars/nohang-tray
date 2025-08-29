@@ -6,5 +6,7 @@ To compile a specific target, run `cmake --build build --target <target_name>` (
 
 Update `README` and other relevant documentation after any changes.
 
+Running `cmake -S . -B build -DBUILD_TESTING=OFF` omits test binaries, reducing build time.
+
 Install `ccache` and configure its maximum size (e.g., run `ccache -M 5G`) to speed up rebuilds.
 
