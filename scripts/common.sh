@@ -93,10 +93,17 @@ install_aqt() {
 
 install_qt() {
   mkdir -p "${QT_ROOT}"
-  # Use module invocation to avoid PATH issues
   python3 -m aqt install-qt linux desktop "${QT_VER}" "${QT_ARCH}" -O "${QT_ROOT}"
-  # quick sanity
-  test -x "${QT_PREFIX}/bin/qmake6" || { log "Qt not found at ${QT_PREFIX}"; exit 1; }
+  
+  # Fix: Check the actual installed path
+  local actual_path="${QT_ROOT}/${QT_VER}/${QT_ARCH}"
+  test -x "${actual_path}/bin/qmake6" || { 
+    log "Qt not found at ${actual_path}"; 
+    exit 1; 
+  }
+
+  # Update QT_PREFIX to match actual installation
+  export QT_PREFIX="${actual_path}"
 }
 
 fetch_tarball() {
