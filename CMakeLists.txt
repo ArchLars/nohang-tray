@@ -57,4 +57,13 @@ if (BUILD_TESTING)
   target_include_directories(NoHangConfig_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
   target_link_libraries(NoHangConfig_test PRIVATE Qt6::Core gtest gtest_main)
   add_test(NAME NoHangConfig_test COMMAND NoHangConfig_test)
+
+  add_executable(Thresholds_test
+    tests/Thresholds_test.cpp
+    src/Thresholds.cpp
+    src/SystemSnapshot.cpp
+  )
+  target_include_directories(Thresholds_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+  target_link_libraries(Thresholds_test PRIVATE Qt6::Core gtest gtest_main)
+  add_test(NAME Thresholds_test COMMAND Thresholds_test)
 endif()
