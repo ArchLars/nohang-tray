@@ -27,6 +27,7 @@ void ProcessTableAction::runTasks() {
     p.waitForFinished(3000);
 
     auto dlg = new QDialog();
+    dlg->setAttribute(Qt::WA_DeleteOnClose);
     dlg->setWindowTitle(QStringLiteral("nohang --tasks"));
     auto* edit = new QTextEdit(dlg);
     edit->setReadOnly(true);

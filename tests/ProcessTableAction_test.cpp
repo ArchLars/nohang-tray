@@ -43,9 +43,13 @@ TEST(ProcessTableActionTest, RunTasksDisplaysOutput)
     qputenv("QT_QPA_PLATFORM", QByteArray("offscreen"));
     QApplication app(argc, argv);
 
+    int before = QApplication::topLevelWidgets().size();
+
     ProcessTableAction act;
     act.runTasks();
     QApplication::processEvents();
+
+    EXPECT_EQ(before + 1, QApplication::topLevelWidgets().size());
 
     bool found = false;
     for (QWidget* w : QApplication::topLevelWidgets()) {
@@ -60,4 +64,7 @@ TEST(ProcessTableActionTest, RunTasksDisplaysOutput)
         }
     }
     EXPECT_TRUE(found);
+
+    QApplication::processEvents();
+    EXPECT_EQ(before, QApplication::topLevelWidgets().size());
 }
