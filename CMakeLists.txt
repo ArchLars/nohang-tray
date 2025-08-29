@@ -40,34 +40,29 @@ install(FILES data/org.archlars.nohangtray.desktop DESTINATION share/application
 include(GNUInstallDirs)
 
 if (BUILD_TESTING)
-  include(FetchContent)
-  FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
-  )
-  FetchContent_MakeAvailable(googletest)
+  find_package(GTest REQUIRED)
 
   add_executable(NoHangConfig_test tests/NoHangConfig_test.cpp)
-  target_link_libraries(NoHangConfig_test PRIVATE nohang_core Qt6::Core gtest gtest_main)
+  target_link_libraries(NoHangConfig_test PRIVATE nohang_core Qt6::Core GTest::gtest GTest::gtest_main)
   add_test(NAME NoHangConfig_test COMMAND NoHangConfig_test)
 
   add_executable(Thresholds_test tests/Thresholds_test.cpp)
-  target_link_libraries(Thresholds_test PRIVATE nohang_core Qt6::Core gtest gtest_main)
+  target_link_libraries(Thresholds_test PRIVATE nohang_core Qt6::Core GTest::gtest GTest::gtest_main)
   add_test(NAME Thresholds_test COMMAND Thresholds_test)
 
   add_executable(SystemSnapshot_test tests/SystemSnapshot_test.cpp)
-  target_link_libraries(SystemSnapshot_test PRIVATE nohang_core Qt6::Core gtest gtest_main)
+  target_link_libraries(SystemSnapshot_test PRIVATE nohang_core Qt6::Core GTest::gtest GTest::gtest_main)
   add_test(NAME SystemSnapshot_test COMMAND SystemSnapshot_test)
 
   add_executable(NoHangUnit_test tests/NoHangUnit_test.cpp)
-  target_link_libraries(NoHangUnit_test PRIVATE nohang_core Qt6::Core gtest gtest_main)
+  target_link_libraries(NoHangUnit_test PRIVATE nohang_core Qt6::Core GTest::gtest GTest::gtest_main)
   add_test(NAME NoHangUnit_test COMMAND NoHangUnit_test)
 
   add_executable(TooltipBuilder_test tests/TooltipBuilder_test.cpp)
-  target_link_libraries(TooltipBuilder_test PRIVATE nohang_core Qt6::Core gtest gtest_main)
+  target_link_libraries(TooltipBuilder_test PRIVATE nohang_core Qt6::Core GTest::gtest GTest::gtest_main)
   add_test(NAME TooltipBuilder_test COMMAND TooltipBuilder_test)
 
   add_executable(ProcessTableAction_test tests/ProcessTableAction_test.cpp)
-  target_link_libraries(ProcessTableAction_test PRIVATE nohang_core Qt6::Core Qt6::Widgets gtest gtest_main)
+  target_link_libraries(ProcessTableAction_test PRIVATE nohang_core Qt6::Core Qt6::Widgets GTest::gtest GTest::gtest_main)
   add_test(NAME ProcessTableAction_test COMMAND ProcessTableAction_test)
 endif()
