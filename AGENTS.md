@@ -2,4 +2,5 @@ You will follow TDD discipline – meaning when tasked with writing a feature, f
 
 Refer to `CODING_GUIDE.md` for an overview of the project structure, build, and test commands.
 
+Update `README` and other relevant documentation after any changes.
 
