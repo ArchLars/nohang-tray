@@ -41,21 +41,21 @@ QString TrayApp::iconNameFor(const NoHangConfig &cfg,
 
   const bool critical =
       below(snap.mem().memAvailableMiB, th.hard_mem_free.mib) ||
-      below(snap.mem().memAvailableMiB, th.soft_mem_free.mib) ||
       below(snap.mem().swapFreeMiB, th.hard_swap_free.mib) ||
-      below(snap.mem().swapFreeMiB, th.soft_swap_free.mib) ||
       above(snap.zram().origDataMiB, th.hard_zram_used.mib) ||
-      above(snap.zram().origDataMiB, th.soft_zram_used.mib) ||
-      (th.hard_psi && psiVal > *th.hard_psi) ||
-      (th.soft_psi && psiVal > *th.soft_psi);
+      (th.hard_psi && psiVal > *th.hard_psi);
 
   if (critical)
     return QStringLiteral("security-high");
 
   const bool warning =
+      below(snap.mem().memAvailableMiB, th.soft_mem_free.mib) ||
       below(snap.mem().memAvailableMiB, th.warn_mem_free.mib) ||
+      below(snap.mem().swapFreeMiB, th.soft_swap_free.mib) ||
       below(snap.mem().swapFreeMiB, th.warn_swap_free.mib) ||
+      above(snap.zram().origDataMiB, th.soft_zram_used.mib) ||
       above(snap.zram().origDataMiB, th.warn_zram_used.mib) ||
+      (th.soft_psi && psiVal > *th.soft_psi) ||
       (th.warn_psi && psiVal > *th.warn_psi);
 
   if (warning)
