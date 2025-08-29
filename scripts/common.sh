@@ -6,8 +6,8 @@ set -euo pipefail
 IFS=$'\n\t'
 
 # Versions and prefixes (override via env before calling the scripts)
-: "${QT_VER:=6.9.2}"
-: "${QT_ARCH:=gcc_64}"                  # aqt arch for Linux desktop
+: "${QT_VER:=6.9.0}"                    # Fixed: Qt 6.9.0 exists, 6.9.2 does not
+: "${QT_ARCH:=linux_gcc_64}"            # Fixed: Use linux_gcc_64 for Qt 6.x on Linux
 : "${QT_ROOT:=/opt/qt}"
 : "${KF_VER:=6.14.0}"                   # KDE Frameworks version to build
 : "${KF_PREFIX:=/opt/kf6}"
