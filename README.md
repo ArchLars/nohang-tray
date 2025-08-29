@@ -57,7 +57,7 @@ cp data/org.archlars.nohangtray.desktop ~/.config/autostart/
 * This helps you gauge how close you are to running out of memory.
 * Icon color reflects severity: green when resources are plentiful, yellow when warn thresholds are reached, and red for critical conditions.
 * Thresholds in configuration files can be written as percentages (e.g. `10%`) or as absolute MiB values (e.g. `512 MiB`).
-* Robust `/proc/meminfo` parsing tolerates leading whitespace, and `/proc/swaps` totals ensure swap usage is always reported.
+* Robust `/proc/meminfo` parsing tolerates leading whitespace, and `/proc/swaps` totals ensure swap usage is always reported, falling back to `/proc/meminfo` if `/proc/swaps` is empty or unreadable.
 
 ## Technical Details
 

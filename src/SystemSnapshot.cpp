@@ -50,11 +50,15 @@ void SystemSnapshot::readMeminfo() {
 void SystemSnapshot::readSwaps() {
     QFile f(m_procRoot + QStringLiteral("/swaps"));
     if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning().noquote() << "SystemSnapshot: cannot open" << f.fileName();
+        if (m_mem.swapTotalMiB == 0 && m_mem.swapFreeMiB == 0) readMeminfo();
         return;
     }
     QTextStream ts(&f);
     QString header;
     if (!ts.readLineInto(&header)) {
+        qWarning().noquote() << "SystemSnapshot: empty" << f.fileName();
+        if (m_mem.swapTotalMiB == 0 && m_mem.swapFreeMiB == 0) readMeminfo();
         return;
     }
     double totalKiB = 0;
@@ -73,6 +77,9 @@ void SystemSnapshot::readSwaps() {
         const double freeKiB = totalKiB - usedKiB;
         m_mem.swapFreeMiB = freeKiB / 1024.0;
         m_mem.swapFreePercent = (m_mem.swapTotalMiB > 0) ? (m_mem.swapFreeMiB * 100.0 / m_mem.swapTotalMiB) : 0;
+    } else {
+        qWarning().noquote() << "SystemSnapshot: empty" << f.fileName();
+        if (m_mem.swapTotalMiB == 0 && m_mem.swapFreeMiB == 0) readMeminfo();
     }
 }
 

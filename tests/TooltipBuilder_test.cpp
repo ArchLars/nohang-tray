@@ -41,3 +41,16 @@ TEST(TooltipBuilderTest, BuildsSummary)
     EXPECT_TRUE(out.contains("PSI:"));
     EXPECT_TRUE(out.contains("metric: full_avg10"));
 }
+
+TEST(TooltipBuilderTest, ShowsSwapSectionWhenUnused)
+{
+    NoHangConfig cfg;
+    SystemSnapshot snap;
+    snap.m_mem.swapTotalMiB = 1000.0;
+    snap.m_mem.swapFreeMiB = 1000.0;
+    snap.m_mem.swapFreePercent = 100.0;
+
+    TooltipBuilder tb;
+    QString out = tb.build(cfg, snap, false, QString());
+    EXPECT_TRUE(out.contains("Swap:\n  total: 1000 MiB\n  free: 1000 MiB (100.0 %)\n"));
+}

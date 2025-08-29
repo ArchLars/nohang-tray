@@ -134,3 +134,33 @@ TEST(SystemSnapshotTest, ParsesMultipleSwapEntries)
     EXPECT_DOUBLE_EQ(0.875, snap.mem().swapFreeMiB);
     EXPECT_NEAR(58.3333, snap.mem().swapFreePercent, 0.001);
 }
+
+TEST(SystemSnapshotTest, MissingSwapsLogsWarningAndUsesMeminfo)
+{
+    QTemporaryDir procDir;
+    QTemporaryDir sysDir;
+
+    QFile meminfo(procDir.filePath("meminfo"));
+    ASSERT_TRUE(meminfo.open(QIODevice::WriteOnly | QIODevice::Text));
+    QTextStream ts(&meminfo);
+    ts << "MemTotal:       2048 kB\n";
+    ts << "MemAvailable:   1024 kB\n";
+    ts << "SwapTotal:       512 kB\n";
+    ts << "SwapFree:        256 kB\n";
+    meminfo.close();
+
+    SystemSnapshot snap(procDir.path(), sysDir.path());
+
+    static QString warning;
+    warning.clear();
+    auto handler = [](QtMsgType type, const QMessageLogContext&, const QString& msg) {
+        if (type == QtWarningMsg && msg.startsWith("SystemSnapshot:")) warning = msg;
+    };
+    QtMessageHandler old = qInstallMessageHandler(handler);
+    snap.refresh();
+    qInstallMessageHandler(old);
+
+    EXPECT_TRUE(warning.contains("cannot open"));
+    EXPECT_DOUBLE_EQ(0.5, snap.mem().swapTotalMiB);
+    EXPECT_DOUBLE_EQ(0.25, snap.mem().swapFreeMiB);
+}
