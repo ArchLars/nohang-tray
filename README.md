@@ -1,6 +1,6 @@
 # nohang-tray
 
-nohang-tray is a KDE Plasma tray utility that shows whether `nohang-desktop.service` is active. Hovering over the icon displays the actions `nohang` will take based on the current configuration and live system values.
+[nohang](https://github.com/hakavlad/nohang) is a daemon that watches system memory pressure and takes action before the kernel freezes. `nohang-tray` is a KDE Plasma tray utility that lets you see whether `nohang-desktop.service` is active and, on hover, review the actions `nohang` will take based on the current configuration and live system values.
 
 ## Build
 ```bash
