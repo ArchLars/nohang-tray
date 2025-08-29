@@ -4,7 +4,7 @@
 
 static ThresholdValue makeVal(std::optional<double> raw, double totalMiB) {
     ThresholdValue v;
-    if (raw) {
+    if (raw && *raw != 0) {
         if (*raw < 0) {
             v.mib = -*raw;
         } else {
@@ -22,17 +22,17 @@ ThresholdSet Thresholds::compute(const ThresholdsPercent& t, const SystemSnapsho
     out.warn_swap_free = makeVal(t.warn_swap_percent_free, snap.mem().swapTotalMiB);
     // ZRAM thresholds are used percent of logical disksize
     out.warn_zram_used = makeVal(t.warn_zram_percent_used, snap.zram().diskSizeMiB);
-    out.warn_psi       = t.warn_psi;
+    out.warn_psi       = (t.warn_psi && *t.warn_psi != 0) ? t.warn_psi : std::nullopt;
 
     out.soft_mem_free  = makeVal(t.soft_mem_percent,  snap.mem().memTotalMiB);
     out.soft_swap_free = makeVal(t.soft_swap_percent_free, snap.mem().swapTotalMiB);
     out.soft_zram_used = makeVal(t.soft_zram_percent_used, snap.zram().diskSizeMiB);
-    out.soft_psi       = t.soft_psi;
+    out.soft_psi       = (t.soft_psi && *t.soft_psi != 0) ? t.soft_psi : std::nullopt;
 
     out.hard_mem_free  = makeVal(t.hard_mem_percent,  snap.mem().memTotalMiB);
     out.hard_swap_free = makeVal(t.hard_swap_percent_free, snap.mem().swapTotalMiB);
     out.hard_zram_used = makeVal(t.hard_zram_percent_used, snap.zram().diskSizeMiB);
-    out.hard_psi       = t.hard_psi;
+    out.hard_psi       = (t.hard_psi && *t.hard_psi != 0) ? t.hard_psi : std::nullopt;
 
     out.psi_metrics    = t.psi_metrics;
     out.psi_duration   = t.psi_duration;

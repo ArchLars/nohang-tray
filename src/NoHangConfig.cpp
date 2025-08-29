@@ -46,7 +46,8 @@ void NoHangConfig::parseFile(const QString& path) {
                 const int eq = line.indexOf('=');
                 if (eq > 0) {
                     const QString raw = line.mid(eq + 1).trimmed();
-                    slot = parsePercentOrMiB(raw);
+                    auto val = parsePercentOrMiB(raw);
+                    if (val || raw == QStringLiteral("0")) slot = val; // preserve zero values
                 }
             }
         };
